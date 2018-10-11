@@ -24,6 +24,13 @@ typedef int derection_mode;enum
     DERECTION_8,
     };
 
+typedef struct 
+    {
+    double averange_rate;
+    double delta_lat;
+    double delta_lon;
+    }track_direction_intf;
+
 #define SUM_DATA     10000
 #define DATE_LENGTH  100
 #define STR_LINE_LENGTH  1024
@@ -47,7 +54,7 @@ main()
     
     double lat[ SUM_DATA ]={0},lon[SUM_DATA]={0},ele[SUM_DATA]={0};
     double time[SUM_DATA] = {0};
-    polifie_mth track_polyfit_mth;     
+    track_direction_intf area_track_inf;     
     
     double lat_max = 0.0f;
     double lat_min = 0.0f;
@@ -56,7 +63,6 @@ main()
     double k_lat[3];
     double k_lon[3];
     double k_averange;
-    //double k[3];
 
     char date_string[SUM_DATA][DATE_LENGTH] = {'\0'};
     char string_line[STR_LINE_LENGTH];
@@ -68,12 +74,12 @@ main()
 
 
     void polyfit(int n,double *x,double *y,int poly_n,double a[]);
-    double plowland_polyfit_method(  int n,double *lon,double *lat );
+    track_direction_intf get_track_rate_info(  int n,double *lon,double *lat );
     void insertsort_positive(double array[],int len);
     void insertsort_invert(double array[],int len);
 
-    const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-10-09_190825.txt"};
-    const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-10-09_190825_new.txt"};
+    const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-01-08_160339.txt"};
+    const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-01-08_160339_new.txt"};
     system("cls");
 
     FILE *fp_read = fopen( file_path,"r");
@@ -177,9 +183,9 @@ main()
     txt_line_num = i;
     //polyfit(n,x,y,poly_n,a);
     //polyfit(i,lat,lon,poly_n,a);
-   k_averange = plowland_polyfit_method( txt_line_num, lon, lat);
-    printf("k_averange=%f\n",k_averange);
-   if( ( k_averange >= -1 ) && ( k_averange <= 1 ) )
+   area_track_inf = get_track_rate_info( txt_line_num, lon, lat);
+    printf("k_averange=%f\n",area_track_inf.averange_rate);
+   if( ( area_track_inf.averange_rate >= -1 ) && ( area_track_inf.averange_rate <= 1 ) )
         {
         polyfit(txt_line_num,lon,lat,poly_n,k_lon);
         for (i=0;i<poly_n+1;i++)/*这里是升序排列，Matlab是降序排列*/
@@ -187,13 +193,13 @@ main()
             printf("k_lon[%d]=%g\n",i,k_lon[i]);
             }
 
-        if( k_averange >= 0 )
+        if( area_track_inf.delta_lon > 0 )
             {
-            insertsort_positive( lat, txt_line_num );
+            insertsort_positive( lon, txt_line_num );
             }
         else
             {
-            insertsort_invert( lat, txt_line_num );
+            insertsort_invert( lon, txt_line_num );
             }
         
         for( i = 0; i < txt_line_num; i++)
@@ -210,7 +216,8 @@ main()
             {
             printf("k_lat[%d]=%g\n",i,k_lat[i]);
             }
-        if( k_averange <= -1 )
+
+        if( area_track_inf.delta_lat > 0 )
             {
             insertsort_positive( lat, txt_line_num );
             }
@@ -350,7 +357,7 @@ void gauss_solve(int n,double A[],double x[],double b[])
     x[i]-=A[i*n+j]*x[j];
 }
 
-double plowland_polyfit_method( int n,double *lon,double *lat )
+track_direction_intf get_track_rate_info( int n,double *lon,double *lat )
 {
     int i,j;
     int average_num = AVG_NUM;
@@ -362,6 +369,7 @@ double plowland_polyfit_method( int n,double *lon,double *lat )
     double delta_lat;
     double delta_lon;
     double averange_k;
+    track_direction_intf track_infor;
     //tempx=(double*)calloc(n,sizeof(double));
     //tempy=(double*)calloc(n,sizeof(double));
     for( i=0; i < AVG_NUM; i++ )
@@ -379,18 +387,11 @@ double plowland_polyfit_method( int n,double *lon,double *lat )
 
     delta_lat = averange_lat_end - averange_lat_start;
     delta_lon = averange_lon_end - averange_lon_start;
-    
-    return averange_k = delta_lat / delta_lon ;
-
-    /*if( ( averange_k >= -1 ) && ( averange_k <= 1 ) )
-        {
-        return LON_IS_VARIABLE;
-        }
-    else //if( ( averange_k < -1 ) && ( averange_k > 1 ) )
-        {
-        return LAT_IS_VARIABLE;
-        }
-*/
+    averange_k = delta_lat / delta_lon;
+    track_infor.averange_rate = averange_k;
+    track_infor.delta_lat     = delta_lat;
+    track_infor.delta_lon     = delta_lon;
+    return  track_infor;
 }
 
 void insertsort_positive(double array[],int len)
