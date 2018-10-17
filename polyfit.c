@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 
+typedef unsigned char    boolean;
 typedef int polifie_mth;enum
     {
     LAT_IS_VARIABLE,
@@ -77,20 +78,23 @@ main()
     track_direction_intf get_track_rate_info(  int n,double *lon,double *lat );
     void insertsort_positive(double array[],int len);
     void insertsort_invert(double array[],int len);
+    void insertsort(double array[],int len,boolean positive);
 
-    const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-01-08_160339.txt"};
-    const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181008\\1010\\Area_2018-01-08_160339_new.txt"};
+    const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt"};
+    const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
     system("cls");
 
     FILE *fp_read = fopen( file_path,"r");
     if( NULL == fp_read )
         {
+            printf("File Path Error");
             return 0;
         }
 
     FILE *fp_write = fopen( file_path_new,"w");
     if(fp_write==NULL)  
         {              
+        printf("File Path Error");
         return 0;  
         }
 
@@ -190,7 +194,7 @@ main()
         polyfit(txt_line_num,lon,lat,poly_n,k_lon);
         for (i=0;i<poly_n+1;i++)/*这里是升序排列，Matlab是降序排列*/
             {
-            printf("k_lon[%d]=%g\n",i,k_lon[i]);
+            printf("k_lon[%d]=%.10f\n",i,k_lon[i]);
             }
 
         if( area_track_inf.delta_lon > 0 )
@@ -214,16 +218,16 @@ main()
         polyfit(txt_line_num,lat,lon,poly_n,k_lat);
         for (i=0;i<poly_n+1;i++)/*这里是升序排列，Matlab是降序排列*/
             {
-            printf("k_lat[%d]=%g\n",i,k_lat[i]);
+            printf("k_lat[%d]=%.10f\n",i,k_lat[i]);
             }
 
         if( area_track_inf.delta_lat > 0 )
             {
-            insertsort_positive( lat, txt_line_num );
+            insertsort( lat, txt_line_num ,1 );
             }
         else
             {
-            insertsort_invert( lat, txt_line_num );
+            insertsort( lat, txt_line_num, 0 );
             }
         
         for( i = 0; i < txt_line_num; i++)
@@ -424,4 +428,33 @@ void insertsort_invert(double array[],int len)
 		if (j != i - 1)
 			array[j + 1] = temp;
 	}
+}
+
+void insertsort(double array[],int len,boolean positive)
+{
+int i, j;
+double temp;
+for (i = 1; i < len; i++)
+    {
+    temp = array[i];
+    j = i - 1;
+    if( positive )
+        {
+        while (j >= 0 && array[j] > temp)
+            {
+            array[j + 1] = array[j];
+            j--;
+            }
+        }
+    else
+        {
+        while (j >= 0 && array[j] < temp)
+            {
+            array[j + 1] = array[j];
+            j--;
+            }
+        }
+    if (j != i - 1)
+    array[j + 1] = temp;
+    }
 }
