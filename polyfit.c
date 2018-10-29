@@ -45,7 +45,7 @@ typedef struct
 
 #define TRUE 1
 #define FALSE -1
-main()
+int main(int argc,char *argv[])
 {
     int i,j,m,n=7,poly_n=2;
     int txt_line_num;
@@ -80,10 +80,28 @@ main()
     void insertsort_invert(double array[],int len);
     void insertsort(double array[],int len,boolean positive);
 
-    const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt"};
-    const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
+    //const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181029\\eTrex302\\Area_2018-10-26_182104.txt"};
+    char file_path[100];
+    //const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
+    char file_path_new[100];// ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
     system("cls");
-
+    for(i=0;i<argc;i++)
+    {
+        printf("i=%d\n",i);
+        printf(argv[i]);
+        printf("\n");
+    }
+    if( argc < 2 )
+       {
+        return -1;
+       }
+    //strcpy(argv[1],"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt"); 
+    //strcpy(file_path,"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt");
+    //strcpy(data_start,"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt");
+    strcpy(file_path,argv[1]);
+    data_offset = strstr(file_path,".txt");
+    strncpy(file_path_new, file_path, data_offset - file_path );
+    strcat(file_path_new,"_new.txt");
     FILE *fp_read = fopen( file_path,"r");
     if( NULL == fp_read )
         {
@@ -129,7 +147,9 @@ main()
     if( NULL != string_line )
         {
         i = 0;
-        data_start = string_line;
+        sscanf( string_line,"%s\t%lf\t%lf\t%lf",date_string[i],&lat[i],&lon[i],&ele[i] );
+        #if(0)
+        const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt"}; = string_line;
         data_offset = strstr(string_line,"\t");
         strncpy(date_string[i],string_line,data_offset - data_start );
 
@@ -154,7 +174,7 @@ main()
         strncpy(data_string,data_start,data_offset - data_start );
         data_string[data_offset - data_start ] = '\0';
         ele[i] = atof( data_string );
-
+        #endif
         i++;
         }
 
@@ -268,6 +288,7 @@ main()
 */
     fclose(fp_write);
     printf("Sucessful!\n"); 
+    return 0;
 
     getch();
 }
