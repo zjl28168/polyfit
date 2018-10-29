@@ -80,24 +80,24 @@ int main(int argc,char *argv[])
     void insertsort_invert(double array[],int len);
     void insertsort(double array[],int len,boolean positive);
 
-    //const char file_path[] = {"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181029\\eTrex302\\Area_2018-10-26_182104.txt"};
     char file_path[100];
-    //const char file_path_new[] ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
-    char file_path_new[100];// ={"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902_new.txt"};
+     char file_path_new[100];
     system("cls");
-    for(i=0;i<argc;i++)
+    if( 0 )
     {
+    for(i=0;i<argc;i++)
+        {
         printf("i=%d\n",i);
         printf(argv[i]);
         printf("\n");
+        }
     }
+
     if( argc < 2 )
        {
         return -1;
        }
-    //strcpy(argv[1],"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt"); 
-    //strcpy(file_path,"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt");
-    //strcpy(data_start,"C:\\Users\\zhaobruce\\Desktop\\fix_length\\20181015\\Area_2018-10-15_100902.txt");
+       
     strcpy(file_path,argv[1]);
     data_offset = strstr(file_path,".txt");
     strncpy(file_path_new, file_path, data_offset - file_path );
